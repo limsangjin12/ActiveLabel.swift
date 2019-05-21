@@ -355,7 +355,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             for element in elements {
                 mutAttrString.setAttributes(attributes, range: element.range)
                 if let additionalAttribute = additionalAttributes[type] {
-                    mutAttrString.setAttributes(additionalAttribute, range: element.range)
+                    mutAttrString.addAttributes(additionalAttribute, range: element.range)
                 }
             }
         }

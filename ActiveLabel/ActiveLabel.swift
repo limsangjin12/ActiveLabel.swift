@@ -64,6 +64,10 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         didSet { updateTextStorage(parseText: false) }
     }
     
+    private var additionalAttributes: [ActiveType: [NSAttributedString.Key: Any]] = [:] {
+        didSet { updateTextStorage(parseText: false) }
+    }
+    
     // MARK: - Computed Properties
     private var hightlightFont: UIFont? {
         guard let highlightFontName = highlightFontName, let highlightFontSize = highlightFontSize else { return nil }
@@ -167,6 +171,23 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         layoutManager.drawGlyphs(forGlyphRange: range, at: newOrigin)
     }
     
+    open func addAdditionalAttribute(type: ActiveType, attribute: [NSAttributedString.Key: Any]) {
+        if additionalAttributes[type] == nil {
+            additionalAttributes[type] = attribute
+        } else {
+            for (key, value) in attribute {
+                additionalAttributes[type]?[key] = value
+            }
+        }
+    }
+    
+    open func removeAdditionalAttribute(type: ActiveType) {
+        additionalAttributes.removeValue(forKey: type)
+    }
+    
+    open func clearAdditionalAttributes() {
+        additionalAttributes = [:]
+    }
     
     // MARK: - customzation
     @discardableResult
@@ -333,6 +354,9 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             
             for element in elements {
                 mutAttrString.setAttributes(attributes, range: element.range)
+                if let additionalAttribute = additionalAttributes[type] {
+                    mutAttrString.setAttributes(additionalAttribute, range: element.range)
+                }
             }
         }
     }
